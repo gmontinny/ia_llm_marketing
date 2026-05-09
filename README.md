@@ -28,7 +28,10 @@ Ambos são integrados através do framework **LangChain**, com interface web con
 ```
 ia_llm_marketing/
 ├── .env                 # Variáveis de ambiente (chaves de API, configurações)
+├── .env.example         # Exemplo de .env para referência (sem dados sensíveis)
 ├── .gitignore           # Arquivos ignorados pelo Git
+├── Dockerfile           # Imagem Docker da aplicação
+├── docker-compose.yml   # Orquestração do container
 ├── requirements.txt     # Dependências do projeto
 ├── app.py               # Interface Streamlit (ponto de entrada)
 ├── notebook/            # Notebook original de desenvolvimento
@@ -54,6 +57,7 @@ ia_llm_marketing/
 - Python 3.10+
 - Conta na [Groq](https://console.groq.com/) com API key gerada
 - (Opcional) Conta na [OpenAI](https://platform.openai.com/) com API key e créditos
+- (Opcional) [Docker](https://www.docker.com/) e Docker Compose para execução via container
 
 ## 🔧 Instalação
 
@@ -79,7 +83,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Configure as variáveis de ambiente no arquivo `.env`:
+4. Crie o arquivo `.env` a partir do exemplo:
+```bash
+cp .env.example .env
+```
+
+5. Edite o `.env` com suas chaves de API:
 ```env
 # Groq (gratuito)
 GROQ_API_KEY=sua_chave_groq_aqui
@@ -96,11 +105,31 @@ OPENAI_MODEL=gpt-4o
 
 ## ▶️ Como Executar
 
+### Localmente
+
 ```bash
 streamlit run app.py
 ```
 
 A aplicação será aberta automaticamente no navegador em `http://localhost:8501`.
+
+### Com Docker
+
+```bash
+docker compose up --build
+```
+
+A aplicação estará disponível em `http://localhost:8501`.
+
+Para rodar em segundo plano:
+```bash
+docker compose up --build -d
+```
+
+Para parar:
+```bash
+docker compose down
+```
 
 ## 🖥️ Como Usar
 
@@ -124,6 +153,18 @@ O resultado será exibido logo abaixo do formulário, formatado em Markdown.
 | [Llama 3.3 70B](https://huggingface.co/meta-llama) | Modelo open source utilizado via Groq |
 | [Streamlit](https://streamlit.io/) | Framework para construção da interface web |
 | [python-dotenv](https://pypi.org/project/python-dotenv/) | Gerenciamento de variáveis de ambiente |
+| [Docker](https://www.docker.com/) | Containerização da aplicação |
+
+## 🐳 Docker
+
+O projeto inclui suporte completo a Docker para facilitar o deploy e a execução em qualquer ambiente.
+
+| Arquivo | Descrição |
+|---------|-----------|
+| `Dockerfile` | Imagem baseada em Python 3.11 slim, instala dependências e executa o Streamlit |
+| `docker-compose.yml` | Orquestra o container, carrega variáveis do `.env` e expõe a porta 8501 |
+
+A imagem final é leve (~200MB) por utilizar `python:3.11-slim` e `--no-cache-dir` na instalação de pacotes.
 
 ## 🔄 Modelos Alternativos
 
@@ -157,6 +198,7 @@ Consulte modelos e preços em: https://platform.openai.com/docs/models
 - O projeto foi desenvolvido inicialmente como notebook no Google Colab e posteriormente convertido para uma aplicação Streamlit profissional
 - A arquitetura com factory pattern permite adicionar novos provedores facilmente sem alterar a lógica da chain
 - As chaves de API nunca devem ser commitadas no repositório — o `.gitignore` já está configurado para ignorar o `.env`
+- O arquivo `.env.example` serve como referência para configuração, sem expor dados sensíveis
 - A OpenAI cobra por uso de tokens — consulte https://openai.com/api/pricing/ para estimativas de custo
 
 ## 📄 Licença
